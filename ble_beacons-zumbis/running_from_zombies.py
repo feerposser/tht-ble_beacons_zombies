@@ -24,5 +24,4 @@ def read_ble():
     scanner.stop()
 
 
-for i in range(0, 10):
-    read_ble()
+read_ble()
