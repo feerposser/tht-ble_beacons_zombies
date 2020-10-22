@@ -28,11 +28,8 @@ def read_ble(sleep_time=1, loops=2):
 
 
 def create_rssi_median():
-    print("criando mediana")
     if len(rssi_readed) > 0:
-        print("tamanho lista:", len(rssi_readed))
         return median(rssi_readed)
-    print("lista vazia")
     return None
 
 
