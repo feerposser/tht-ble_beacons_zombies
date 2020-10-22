@@ -1,27 +1,65 @@
+from statistics import median
 import time
 
-from beacontools import BeaconScanner, EddystoneFilter, \
-    EddystoneUIDFrame, EddystoneTLMFrame, EddystoneURLFrame
+from beacontools import BeaconScanner, \
+    EddystoneFilter, EddystoneUIDFrame
+
+rssi_data = []
+
+rssi_readed = []
 
 
 def read_callback(bt_addr, rssi, packet, additional_info):
-    print(packet, ":", rssi)
-    print(bt_addr)
-    print(additional_info)
-    print("-"*100)
-    time.sleep(10)
+    print(rssi)
+    rssi_readed.append(rssi)
 
 
-def read_ble():
-    scanner = BeaconScanner(
-        read_callback,
-        device_filter=EddystoneFilter(namespace="edd1ebeac04e5defa017"),
-        packet_filter=[EddystoneUIDFrame,
-                       EddystoneTLMFrame,
-                       EddystoneURLFrame])
-    scanner.start()
-    time.sleep(5)
-    scanner.stop()
+def read_ble(sleep_time=1, loops=2):
+    for loop in range(0, loops):
+        scanner = BeaconScanner(
+            read_callback,
+            device_filter=EddystoneFilter(namespace="edd1ebeac04e5defa017"),
+            packet_filter=[EddystoneUIDFrame]
+        )
+
+        scanner.start()
+        time.sleep(sleep_time)
+        scanner.stop()
 
 
-read_ble()
+def create_rssi_median():
+    print("criando mediana")
+    if len(rssi_readed) > 0:
+        print("tamanho lista:", len(rssi_readed))
+        return median(rssi_readed)
+    print("lista vazia")
+    return None
+
+
+def is_running():
+    try:
+        print("está correndo?")
+        if (rssi_data[-2]+rssi_data[-3]) / 2 > rssi_data[-1]:
+            print("sim")
+            return True
+        print("não")
+        return False
+    except Exception as e:
+        print(e)
+
+
+def run():
+    while True:
+        rssi_readed.clear()
+        read_ble()
+        median = create_rssi_median()
+
+        if median:
+            rssi_data.append(median)
+
+        if len(rssi_data) > 3:
+            is_running()
+
+
+if __name__ == "__main__":
+    run()
