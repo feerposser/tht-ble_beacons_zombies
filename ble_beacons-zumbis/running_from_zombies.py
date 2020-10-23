@@ -4,9 +4,8 @@ import time
 from beacontools import BeaconScanner, \
     EddystoneFilter, EddystoneUIDFrame
 
-rssi_data = []
-
-rssi_readed = []
+rssi_readed = []  # lista para armazenar rssis lidos
+rssi_data = []  # lsita para armazenar rssis processados
 
 
 def read_callback(bt_addr, rssi, packet, additional_info):
@@ -21,7 +20,6 @@ def read_ble(sleep_time=1, loops=2):
             device_filter=EddystoneFilter(namespace="edd1ebeac04e5defa017"),
             packet_filter=[EddystoneUIDFrame]
         )
-
         scanner.start()
         time.sleep(sleep_time)
         scanner.stop()
